@@ -1,7 +1,7 @@
 // HomeScreen.js
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, View, Text, Animated } from 'react-native';
-import LoadingAnimation from './AnimationComponents/LoadingAnimation';
+import LoadingAnimation from '../AnimationComponents/LoadingAnimation';
 
 export default function HomeScreen() {
     const [loading, setLoading] = useState(true);
@@ -44,7 +44,7 @@ export default function HomeScreen() {
         return (
             <Animated.View style={{ ...styles.container, opacity: fadeAnim }}>
                 {Array.isArray(data.clans) && data.clans.map((item, index) => (
-                    <Text key={index}>{item.name}</Text>
+                    <Text style={{ color: 'white' }} key={index}>{item.name}</Text>
                 ))}
             </Animated.View>
         );
@@ -54,7 +54,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: 'black',
         alignItems: 'center',
         justifyContent: 'center',
     },
