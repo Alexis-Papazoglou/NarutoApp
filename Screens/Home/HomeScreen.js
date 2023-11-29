@@ -1,8 +1,8 @@
 // HomeScreen.js
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, View, Text, Animated } from 'react-native';
-import LoadingAnimation from '../AnimationComponents/LoadingAnimation';
-import { useAppState } from '../ContextProviders/AppStateProvider';
+import LoadingAnimation from '../../AnimationComponents/LoadingAnimation';
+import { useAppState } from '../../ContextProviders/AppStateProvider';
 
 export default function HomeScreen() {
     const [loading, setLoading] = useState(true);

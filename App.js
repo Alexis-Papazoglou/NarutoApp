@@ -1,12 +1,9 @@
+// App.js
 import React from 'react';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import HomeScreen from './Screens/HomeScreen';
 import { AppStateProvider, useAppState } from './ContextProviders/AppStateProvider';
 import OnboardingScreenSliders from './Screens/OnboardingScreenSliders';
-import Authenticate from './Components/Authenticate';
-
-const Stack = createStackNavigator();
+import BottomTabNavigator from './BottomTabNavigator';  // Import BottomTabNavigator
 
 const MyTheme = {
   ...DefaultTheme,
@@ -17,21 +14,15 @@ const MyTheme = {
 };
 
 const MainApp = () => {
-  const { showOnboarding } = useAppState();
+  const { showOnboarding, isLoggedIn } = useAppState();
 
   return (
     <NavigationContainer theme={MyTheme}>
-      <Stack.Navigator initialRouteName="Home">
-        {showOnboarding ? (
-          <Stack.Screen name="Onboarding" component={OnboardingScreenSliders} options={{ headerShown: false }} />
-        ) : (
-          <>
-            <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
-            <Stack.Screen name="Authenticate" component={Authenticate} options={{ headerShown: false }} />
-          </>
-        )}
-        {/* Add more screens here */}
-      </Stack.Navigator>
+      {showOnboarding && !isLoggedIn ? (
+        <OnboardingScreenSliders />
+      ) : (
+        <BottomTabNavigator />
+      )}
     </NavigationContainer>
   );
 }
