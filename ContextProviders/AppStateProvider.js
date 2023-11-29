@@ -5,7 +5,7 @@ export const AppStateContext = createContext();
 export const AppStateProvider = ({ children }) => {
     const [showOnboarding, setShowOnboarding] = useState(true);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [username, setUsername] = useState(null);
+    const [username, setUsername] = useState('Random User');
 
     const updateShowOnboarding = (value) => {
         setShowOnboarding(value);

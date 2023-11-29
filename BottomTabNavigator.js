@@ -7,11 +7,14 @@ import ExploreStack from './StackNavigation/ExploreStack';
 import ProfileStack from './StackNavigation/ProfileStack';
 import BlogStack from './StackNavigation/BlogStack';
 import BottomNavigationAnimations from './AnimationComponents/BottomNavigationAnimations';
+import * as Haptics from 'expo-haptics';
 
 const Tab = createBottomTabNavigator();
 
 export default function BottomTabNavigator() {
 
+    // this component exists here to create space between the 3rd and 4th tab
+    // so we can display the animation component in the space
     const DecorativeComponent = () => {
         return (
             <View style={styles.decorativeComponent}>
@@ -37,6 +40,11 @@ export default function BottomTabNavigator() {
                             <Ionicons name="home" color={color} size={size} />
                         ),
                     }}
+                    listeners={{
+                        tabPress: e => {
+                            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                        },
+                    }}
                 />
                 <Tab.Screen
                     name="Explore"
@@ -47,12 +55,17 @@ export default function BottomTabNavigator() {
                             <Ionicons name="search" color={color} size={size} />
                         ),
                     }}
+                    listeners={{
+                        tabPress: e => {
+                            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                        },
+                    }}
                 />
                 <Tab.Screen
                     name="Decorative"
                     component={DecorativeComponent}
                     options={{
-                        tabBarButton: () => <TouchableOpacity disabled={true} style={styles.decorativeTabBarButton} />,  // Use a custom style
+                        tabBarButton: () => <TouchableOpacity disabled={true} style={styles.decorativeTabBarButton} />,
                     }}
                 />
                 <Tab.Screen
@@ -64,6 +77,11 @@ export default function BottomTabNavigator() {
                             <Ionicons name="book" color={color} size={size} />
                         ),
                     }}
+                    listeners={{
+                        tabPress: e => {
+                            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                        },
+                    }}
                 />
                 <Tab.Screen
                     name="Profile"
@@ -73,6 +91,11 @@ export default function BottomTabNavigator() {
                         tabBarIcon: ({ color, size }) => (
                             <Ionicons name="person" color={color} size={size} />
                         ),
+                    }}
+                    listeners={{
+                        tabPress: e => {
+                            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                        },
                     }}
                 />
             </Tab.Navigator>
@@ -91,11 +114,11 @@ const styles = StyleSheet.create({
         bottom: 0,
         width: '100%',
         height: 55,  // Adjust this value to control the height of the tabBar
-        backgroundColor: 'black',
+        backgroundColor: '#151515',
         borderTopColor: 'orange',
-        borderTopWidth: 0.4,
+        borderTopWidth: 0.3,
     },
     decorativeTabBarButton: {
-        flex: 1.4,
+        flex: 1.5,
     },
 });

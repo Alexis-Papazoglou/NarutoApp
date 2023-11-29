@@ -1,47 +1,97 @@
-import { StyleSheet, View, Animated } from 'react-native';
+import { StyleSheet, View, Animated, TouchableWithoutFeedback } from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
+import * as Haptics from 'expo-haptics';
 
 export default function BottomNavigationAnimations() {
     const gifs = [
         require('../assets/kakashi.gif'),
         require('../assets/madara.gif'),
-        // Add more gifs here
+        require('../assets/sasuke.gif'),
+        require('../assets/fight.gif'),
+        require('../assets/eyes.gif'),
+        require('../assets/naruto.gif'),
+        require('../assets/itachi.gif'),
+        require('../assets/itachi2.gif'),
     ];
-    const gifIndex = useRef(0);  // Initial index: 0
+    const gifIndex = useRef(0);
     const [currentGif, setCurrentGif] = useState(gifs[gifIndex.current]);
-    const fadeAnim = useRef(new Animated.Value(1)).current;  // Initial value for opacity: 1
+    const fadeAnim = useRef(new Animated.Value(1)).current;
+    const scaleAnim = useRef(new Animated.Value(1)).current;
+    const positionAnim = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
         const interval = setInterval(() => {
+            gifIndex.current = (gifIndex.current + 1) % gifs.length;
             Animated.timing(fadeAnim, {
                 toValue: 0,
-                duration: 800,
+                duration: 2500,
                 useNativeDriver: true,
             }).start(() => {
-                gifIndex.current = (gifIndex.current + 1) % gifs.length;  // Update the index
-                setCurrentGif(gifs[gifIndex.current]);  // Update the gif
+                setCurrentGif(gifs[gifIndex.current]);
                 Animated.timing(fadeAnim, {
                     toValue: 1,
-                    duration: 800,
+                    duration: 2500,
                     useNativeDriver: true,
                 }).start();
             });
-        }, 5000);  // Change gifs every 3 seconds
+        }, 8000);
 
-        return () => clearInterval(interval);  // Clean up on component unmount
+        return () => clearInterval(interval);
     }, []);
 
+    const handlePressIn = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        Animated.parallel([
+            Animated.timing(scaleAnim, {
+                toValue: 3,
+                duration: 500,
+                useNativeDriver: true,
+            }),
+            Animated.timing(positionAnim, {
+                toValue: 1,
+                duration: 500,
+                useNativeDriver: true,
+            }),
+        ]).start();
+    };
+
+    const handlePressOut = () => {
+        Animated.parallel([
+            Animated.timing(scaleAnim, {
+                toValue: 1,
+                duration: 500,
+                useNativeDriver: true,
+            }),
+            Animated.timing(positionAnim, {
+                toValue: 0,
+                duration: 500,
+                useNativeDriver: true,
+            }),
+        ]).start();
+    };
+
+    const containerStyle = {
+        ...styles.container,
+        transform: [
+            { scale: scaleAnim },
+            {
+                translateY: positionAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -100],
+                }),
+            },
+        ],
+    };
+
     return (
-        <View style={styles.container}>
-            <Animated.Image style={{...styles.gifStyle, opacity: fadeAnim}} source={currentGif} />
-            <View style={styles.borderTop} />
-        </View>
+        <TouchableWithoutFeedback onPressIn={handlePressIn} onPressOut={handlePressOut}>
+            <Animated.View style={containerStyle}>
+                <Animated.Image imageStyle={{ borderRadius: 50}} style={{ ...styles.gifStyle, opacity: fadeAnim }} source={currentGif} />
+                <View style={styles.borderTop} />
+            </Animated.View>
+        </TouchableWithoutFeedback>
     )
 }
-
-// Your styles here
-
-// Your styles here
 
 const styles = StyleSheet.create({
     container: {
@@ -53,14 +103,14 @@ const styles = StyleSheet.create({
         borderRadius: 50,
         borderColor: 'orange',
         borderWidth: 1,
-        shadowColor: 'orange',  // Set the shadow color to black
+        shadowColor: 'orange',
         shadowOffset: {
-            width: 0,  // Set the horizontal offset of the shadow to 0
-            height: 2,  // Set the vertical offset of the shadow to 2
+            width: 0,
+            height: 2,
         },
-        shadowOpacity: 0.7,  // Set the opacity of the shadow to 0.25
-        shadowRadius: 30.84,  // Set the blur radius of the shadow to 3.84
-        elevation: 3,  // Set the elevation of the shadow to 5 (for Android)
+        shadowOpacity: 0.5,
+        shadowRadius: 20.84,
+        elevation: 3,
         backgroundColor: 'black',
     },
     overlay: {
