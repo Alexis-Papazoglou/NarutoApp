@@ -3,20 +3,28 @@ import React, { createContext, useContext, useState } from 'react';
 export const AppStateContext = createContext();
 
 export const AppStateProvider = ({ children }) => {
-    const [showOnboarding, setShowOnboarding] = useState(true); // Add the showOnboarding state
+    const [showOnboarding, setShowOnboarding] = useState(true);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [username, setUsername] = useState(null);
 
-    const updateShowOnboarding = (value) => { // Add the updateShowOnboarding function
+    const updateShowOnboarding = (value) => {
         setShowOnboarding(value);
-    };
+    }
+
+    const updateIsLoggedIn = (value) => {
+        setIsLoggedIn(value); // Add this line
+    }
+
+    const updateUsername = (value) => {
+        setUsername(value); // Add this line
+    }
 
     return (
-        <AppStateContext.Provider
-            value={{ showOnboarding, updateShowOnboarding }} // Include the showOnboarding state and updateShowOnboarding function in the context value
-        >
+        <AppStateContext.Provider value={{ showOnboarding, updateShowOnboarding, isLoggedIn, updateIsLoggedIn, username, updateUsername }}>
             {children}
         </AppStateContext.Provider>
     );
-};
+}
 
 export const useAppState = () => {
     const appState = useContext(AppStateContext); // Retrieve the app state from the context

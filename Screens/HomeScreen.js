@@ -2,11 +2,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, View, Text, Animated } from 'react-native';
 import LoadingAnimation from '../AnimationComponents/LoadingAnimation';
+import { useAppState } from '../ContextProviders/AppStateProvider';
 
 export default function HomeScreen() {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState(null);
     const fadeAnim = useRef(new Animated.Value(0)).current; // Initial value for opacity: 0
+    const { isLoggedIn , username } = useAppState();
 
     const handleAnimationEnd = () => {
         setTimeout(() => {
@@ -43,6 +45,9 @@ export default function HomeScreen() {
     } else {
         return (
             <Animated.View style={{ ...styles.container, opacity: fadeAnim }}>
+                <Text style={{ color: 'red' }}>
+                    Logged: {isLoggedIn ? username : 'False'}
+                </Text>
                 {Array.isArray(data.clans) && data.clans.map((item, index) => (
                     <Text style={{ color: 'white' }} key={index}>{item.name}</Text>
                 ))}

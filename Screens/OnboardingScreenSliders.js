@@ -2,7 +2,6 @@ import React, { useState, useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import { useAppState } from '../ContextProviders/AppStateProvider';
 import Swiper from 'react-native-swiper';
-import Slide3 from '../Components/Slides/Slide3';
 import Slide2 from '../Components/Slides/Slide2';
 import Slide1 from '../Components/Slides/Slide1';
 
@@ -12,7 +11,7 @@ const OnboardingScreenSliders = () => {
     const swiperRef = useRef(null);
 
     const handleNextSlide = () => {
-        if (currentSlide < 2) {
+        if (currentSlide < 1) {
             setCurrentSlide(currentSlide + 1);
             swiperRef.current.scrollBy(1);
         } else {
@@ -30,7 +29,6 @@ const OnboardingScreenSliders = () => {
         >
             <Slide1 handleNextSlide={handleNextSlide}/>
             <Slide2 handleNextSlide={handleNextSlide}/>
-            <Slide3 handleNextSlide={handleNextSlide} />
         </Swiper>
     );
 };

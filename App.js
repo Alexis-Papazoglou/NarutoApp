@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from './Screens/HomeScreen';
 import { AppStateProvider, useAppState } from './ContextProviders/AppStateProvider';
 import OnboardingScreenSliders from './Screens/OnboardingScreenSliders';
+import Authenticate from './Components/Authenticate';
 
 const Stack = createStackNavigator();
 
@@ -24,7 +25,10 @@ const MainApp = () => {
         {showOnboarding ? (
           <Stack.Screen name="Onboarding" component={OnboardingScreenSliders} options={{ headerShown: false }} />
         ) : (
-          <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
+          <>
+            <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="Authenticate" component={Authenticate} options={{ headerShown: false }} />
+          </>
         )}
         {/* Add more screens here */}
       </Stack.Navigator>
