@@ -1,10 +1,11 @@
-import { StyleSheet, Text, View, Image } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { useAppState } from '../../ContextProviders/AppStateProvider';  
-import {FIREBASE_AUTH} from '../../firebase';  
+import { useAppState } from '../../ContextProviders/AppStateProvider';
+import { FIREBASE_AUTH } from '../../firebase';
+import { signOut } from 'firebase/auth';
 
-export default function ProfileScreen() {
-  const { isLoggedIn , username } = useAppState();  // Get isLoggedIn and user from global state
+export default function ProfileScreen({ navigation }) {
+  const { isLoggedIn, updateIsLoggedIn , username } = useAppState();  // Get isLoggedIn and user from global state
   const [email, setEmail] = useState('demo');
   const [profilePicture, setProfilePicture] = useState(null);
 
@@ -17,11 +18,27 @@ export default function ProfileScreen() {
     }
   }, []);
 
-  // If the user is not logged in, show the LoginScreen
+  const handleLogout = () => {
+    signOut(FIREBASE_AUTH)
+      .then(() => {
+        console.log('User signed out');
+        updateIsLoggedIn(false); // Update isLoggedIn in global state
+      })
+      .catch((error) => {
+        console.error('Sign out error', error);
+      });
+  };
+
   if (!isLoggedIn) {
     return (
       <View style={styles.container}>
         <Text style={styles.notLoggedText}>Not logged</Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('LoginScreen')}
+        >
+          <Text style={styles.buttonText}>Log In Now</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -34,6 +51,12 @@ export default function ProfileScreen() {
         )}
         <Text style={styles.email}>{email}</Text>
         <Text style={styles.username}>{username}</Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleLogout}
+        >
+          <Text style={styles.buttonText}>Log Out</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -68,5 +91,25 @@ const styles = StyleSheet.create({
   notLoggedText: {
     color: 'white',
     fontSize: 24,
+  },
+  button: {
+    marginTop: 20,
+    backgroundColor: 'orange',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 10,
+    shadowColor: 'orange',
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 20,
+    elevation: 5,
+  },
+  buttonText: {
+    color: 'black',
+    textAlign: 'center',
+    fontSize: 18,
   },
 });

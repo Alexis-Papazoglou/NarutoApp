@@ -13,7 +13,7 @@ export default function Authenticate({ handleNextSlide }) {
     const [isLoading, setIsLoading] = useState(false);  // New state variable
     const auth = getAuth(FIREBASE_APP)
     const navigation = useNavigation();
-    const { updateShowOnboarding, updateIsLoggedIn, updateUsername } = useAppState();
+    const { showOnboarding, updateShowOnboarding, updateIsLoggedIn, updateUsername } = useAppState();
 
     const handleLogin = () => {
         setIsLoading(true);
@@ -48,12 +48,25 @@ export default function Authenticate({ handleNextSlide }) {
         updateIsLoggedIn(true);
         updateUsername(utilsSeperateEmailFromUsername(user.email));
         console.log('Success ' + method);
-        navigation.navigate('Home');
+        if (showOnboarding) {
+            navigation.navigate('Home');
+        }else
+        {
+            navigation.navigate('ProfileScreen');
+        }
         setIsLoading(false);
     }
 
+    const handleContinueAsGuest = () => {
+        if (showOnboarding) {
+            handleNextSlide();
+        } else {
+            navigation.navigate('ProfileScreen');
+        }
+    }
+
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, !showOnboarding && { flex: 0.95 }]}>
             {isLoading ? (
                 <ActivityIndicator size="large" color="orange" style={{ marginTop: 10 }} />  // Loading indicator
             ) : (
@@ -80,7 +93,7 @@ export default function Authenticate({ handleNextSlide }) {
                     <TouchableOpacity style={styles.btn} onPress={handleCreateAccount}>
                         <Text style={styles.btnText}>Create account</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={handleNextSlide}>
+                    <TouchableOpacity onPress={handleContinueAsGuest}>
                         <Text style={styles.text}>Continue as guest</Text>
                     </TouchableOpacity>
                 </>

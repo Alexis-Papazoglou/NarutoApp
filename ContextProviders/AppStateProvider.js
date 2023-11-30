@@ -12,7 +12,10 @@ export const AppStateProvider = ({ children }) => {
     }
 
     const updateIsLoggedIn = (value) => {
-        setIsLoggedIn(value); // Add this line
+        setIsLoggedIn(value);
+        if(!value){
+            setUsername('Random User');
+        }
     }
 
     const updateUsername = (value) => {
