@@ -1,14 +1,15 @@
-import { StyleSheet, Text, View, Image, Animated, TouchableOpacity, PanResponder, Dimensions } from 'react-native'
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect, createRef } from 'react';
+import { StyleSheet, Text, View, Image, Animated, TouchableOpacity, Dimensions, ActivityIndicator } from 'react-native';
+import { capitalizeFirstLetter } from '../../utils';
 
 export default function SpecificCharacter({ route }) {
     const { character } = route.params;
+    const [isLoading, setIsLoading] = useState(true);
     const scrollY = useRef(new Animated.Value(0)).current;
     const buttonOpacity = useRef(new Animated.Value(0)).current;
-    const scrollViewRef = useRef(null);
     const [isExpanded, setIsExpanded] = useState(false);
+    const scrollViewRef = createRef();
 
-    // When the view is expanded, animate the opacity of the reset button to 1
     useEffect(() => {
         Animated.timing(buttonOpacity, {
             toValue: isExpanded ? 1 : 0,
@@ -17,7 +18,6 @@ export default function SpecificCharacter({ route }) {
         }).start();
     }, [isExpanded]);
 
-    // Interpolate scroll values for different properties
     const interpolateScroll = (scrollY, inputRange, outputRange) => {
         return scrollY.interpolate({
             inputRange,
@@ -26,30 +26,20 @@ export default function SpecificCharacter({ route }) {
         });
     }
 
-    // Interpolate scroll values for different properties
-    
     const textContainerHeight = interpolateScroll(scrollY, [0, 100], ['65%', '85%']);
     const textMarginBot = interpolateScroll(scrollY, [0, 100], ['0%', '20%']);
     const overlayBackgroundColor = interpolateScroll(scrollY, [0, 100], ['rgba(0, 0, 0, 0.3)', 'rgba(0, 0, 0, 0.8)']);
 
-    // Create a pan responder to handle touch events
-    const panResponder = PanResponder.create({
-        onMoveShouldSetPanResponder: () => !isExpanded, // Only respond to touch events if the view is not expanded
-        onPanResponderMove: (event, gestureState) => {
-            if (Math.abs(gestureState.dy) > Math.abs(gestureState.dx) && gestureState.dy < 0) { // If the user is scrolling up
-                scrollY.setValue(-gestureState.dy); // Update the scroll value
-                setIsExpanded(true); // Set the view to expanded
-            }
-        },
-        onPanResponderRelease: (event, gestureState) => {
-            // When the user releases the touch, animate the scroll value to the height of the window
+    const expandView = () => {
+        if (!isExpanded) {
             Animated.timing(scrollY, {
                 toValue: Dimensions.get('window').height,
                 duration: 500,
                 useNativeDriver: false,
             }).start();
-        },
-    });
+            setIsExpanded(true);
+        }
+    }
 
     const resetView = () => {
         scrollY.setValue(0);
@@ -58,18 +48,49 @@ export default function SpecificCharacter({ route }) {
     }
 
     return (
-        <View style={styles.container} {...panResponder.panHandlers}>
+        <View style={styles.container}>
             <View style={styles.imageContainer}>
-                <Image source={{ uri: character.images[0] }} style={styles.image} />
+                {isLoading && (
+                    <View style={styles.activityIndicatorContainer}>
+                        <ActivityIndicator size="large" color="orange" />
+                    </View>
+                )}
+                <Image
+                    source={character.name.toLowerCase() === 'jiraiya'
+                        ? require('../../assets/Jiraiya_main.jpg')
+                        : { uri: character.images[1] ? character.images[1] : character.images[0] }}
+                    style={styles.image}
+                    onLoadStart={() => setIsLoading(true)}
+                    onLoadEnd={() => setIsLoading(false)}
+                />
                 <Animated.View style={[styles.overlay, { backgroundColor: overlayBackgroundColor }]} />
             </View>
             <Animated.ScrollView
                 ref={scrollViewRef}
+                onTouchStart={expandView}
                 style={[styles.textContainer, { height: textContainerHeight, marginBottom: textMarginBot }]}
                 scrollEnabled={isExpanded}
+                stickyHeaderIndices={[0]} // Add this line
             >
-                <Text style={styles.text}>{character.name}</Text>
-                <Text style={[styles.text , styles.last]}>{character.jutsu}</Text>
+                <View style={styles.nameContainer}>
+                    <Text style={styles.nameText}>{character.name}</Text>
+                </View>
+                <View style={styles.contentContainer}>
+                    {Object.entries(character.personal).map(([key, value], index) => {
+                        return (
+                            <View key={index} style={styles.detailContainer}>
+                                <Text style={styles.detailKey}>{capitalizeFirstLetter(key)} :</Text>
+                                {typeof value === 'object' ? (
+                                    Object.entries(value).map(([subKey, subValue], subIndex) => (
+                                        <Text key={subIndex} style={styles.detailValue}>{`${subKey}: ${subValue}`}</Text>
+                                    ))
+                                ) : (
+                                    <Text style={styles.detailValue}>{value}</Text>
+                                )}
+                            </View>
+                        );
+                    })}
+                </View>
             </Animated.ScrollView>
             <Animated.View style={[styles.resetButton, { opacity: buttonOpacity }]}>
                 <TouchableOpacity onPress={resetView}>
@@ -92,6 +113,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginTop: 22,
         backgroundColor: 'black',
+    },
+    activityIndicatorContainer: {
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     imageContainer: {
         position: 'absolute',
@@ -120,27 +150,59 @@ const styles = StyleSheet.create({
         right: 0,
         height: '65%',
         marginHorizontal: 8,
-        padding: 16,
+        paddingHorizontal: 16,
         borderRadius: 10,
         borderWidth: 1,
         borderColor: 'orange',
     },
     resetButton: {
         position: 'absolute',
-        right: 10,
-        top: 10,
-        padding: 10,
+        right: 0,
+        top: 0,
+        paddingHorizontal: 14,
+        paddingVertical: 7,
         backgroundColor: 'orange',
         borderRadius: 5,
     },
     buttonText: {
         fontSize: 16,
         color: 'black',
+        fontWeight: '500',
     },
     text: {
         color: 'white',
+        fontSize: 16,
+    },
+    nameText: {
+        color: 'orange',
+        fontSize: 20,
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    contentContainer: {
+        flex: 1,
+        paddingVertical: 12,
+    },
+    nameContainer: {
+        borderBottomWidth: 1,
+        borderBottomColor: 'orange',
+        paddingVertical: 12,
+        backgroundColor: 'black'
     },
     last: {
         paddingBottom: 50,
-    }
+    },
+    detailContainer: {
+        marginVertical: 5,
+    },
+    detailKey: {
+        paddingBottom: 4,
+        color: 'orange',
+        fontWeight: 'bold',
+        fontSize: 18,
+    },
+    detailValue: {
+        color: 'white',
+        fontSize: 16,
+    },
 })
