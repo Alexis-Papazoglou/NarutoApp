@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, View, Text, Animated, ScrollView } from 'react-native';
 import LoadingAnimation from '../../AnimationComponents/LoadingAnimation';
 import { useAppState } from '../../ContextProviders/AppStateProvider';
+import QuoteOfTheDay from '../../Components/QuoteOfTheDay';
 
 export default function HomeScreen() {
     const [loading, setLoading] = useState(true);
@@ -41,6 +42,7 @@ export default function HomeScreen() {
                             <Text style={styles.usernameText}> {username}</Text>
                         </Text>
                     </View>
+                    <QuoteOfTheDay />
                 </ScrollView>
             </Animated.View>
         );
