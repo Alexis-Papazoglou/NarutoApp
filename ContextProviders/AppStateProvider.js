@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState } from 'react';
 export const AppStateContext = createContext();
 
 export const AppStateProvider = ({ children }) => {
-    const [showOnboarding, setShowOnboarding] = useState(false);
+    const [showOnboarding, setShowOnboarding] = useState(true);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [username, setUsername] = useState('Random User');
 

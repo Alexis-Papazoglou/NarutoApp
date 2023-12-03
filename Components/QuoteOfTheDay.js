@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
     },
     text: {
-        width: '80%',
+        width: '85%',
         color: 'white',
         fontSize: 16,
         textAlign: 'center',
@@ -84,12 +84,14 @@ const styles = StyleSheet.create({
         textAlign: 'right',
     },
     shadow: {
+        backgroundColor: 'black',
         shadowColor: 'orange',
         shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.3,
+        shadowOpacity: 0.2,
         shadowRadius: 20,
         elevation: 5, // for Android
         borderWidth: 1,
         borderColor: 'black',
+        borderRadius: 10,
     },
 });

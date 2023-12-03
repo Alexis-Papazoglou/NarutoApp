@@ -1,24 +1,29 @@
-import { StyleSheet, Text, View, TextInput, FlatList } from 'react-native'
+import { StyleSheet, Text, View, TextInput, FlatList, TouchableOpacity } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import CharacterCard from '../../Components/CharacterCard'
-import useFetchAPI from '../../Hooks/useFetchAPI'
 import { useNavigation } from '@react-navigation/native'
+import useFetchAllCharacters from '../../Hooks/useFetchAllCharacters'
+
+// TODO : Functionality to search characters by name even when the character is not fetched yet
 
 export default function Characters() {
+    const flatListRef = React.useRef();
     const [searchTerm, setSearchTerm] = useState('')
-    const { data, error } = useFetchAPI('characters')
-    const [characters, setCharacters] = useState([])
+    const { characters, error, loading, fetchMore } = useFetchAllCharacters(24)
+    const [filteredCharacters, setFilteredCharacters] = useState([])
     const navigation = useNavigation()
 
     useEffect(() => {
-        if (data && data.characters) {
-            setCharacters(data.characters)
-        }
-    }, [data])
+        setFilteredCharacters(
+            characters.filter(character =>
+                character.name.toLowerCase().includes(searchTerm.toLowerCase())
+            )
+        )
+    }, [characters, searchTerm])
 
-    const filteredCharacters = characters.filter(character =>
-        character.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+    const handleBackToTop = () => {
+        flatListRef.current.scrollToOffset({ animated: true, offset: 0 });
+    }
 
     return (
         <View style={styles.container}>
@@ -34,6 +39,7 @@ export default function Characters() {
                 <Text style={styles.errorText}>Error: {error}</Text>
             ) : (
                 <FlatList
+                    ref={flatListRef}
                     contentContainerStyle={{ paddingBottom: 100 }}
                     data={filteredCharacters}
                     keyExtractor={item => item.id.toString()}
@@ -43,6 +49,16 @@ export default function Characters() {
                         </View>
                     )}
                     numColumns={3}
+                    ListFooterComponent={
+                        <View style={styles.footer}>
+                            <TouchableOpacity style={styles.button} onPress={fetchMore}>
+                                <Text style={styles.buttonText}>Show more</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={handleBackToTop}>
+                                <Text style={styles.backToTopText}>Back to top</Text>
+                            </TouchableOpacity>
+                        </View>
+                    }
                 />
             )}
         </View>
@@ -55,6 +71,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'black',
         paddingVertical: 20,
         paddingHorizontal: 10,
+        justifyContent: 'center',
     },
     input: {
         height: 40,
@@ -73,5 +90,33 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         marginVertical: 10,
+    },
+    footer: {
+        width: '100%',
+        alignItems: 'center',
+        marginTop: 20,
+    },
+    button: {
+        backgroundColor: 'orange',
+        paddingHorizontal: 40,
+        paddingVertical: 10,
+        borderRadius: 10,
+        shadowColor: 'orange',
+        shadowOffset: {
+            width: 0,
+            height: 0,
+        },
+        shadowOpacity: 0.5,
+        shadowRadius: 20,
+        elevation: 5,
+    },
+    buttonText: {
+        color: 'black',
+        fontSize: 24,
+    },
+    backToTopText: {
+        color: 'white',
+        fontSize: 18,
+        marginTop: 10,
     },
 })
