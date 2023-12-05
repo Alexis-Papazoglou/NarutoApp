@@ -5,7 +5,7 @@ export const AppStateContext = createContext();
 export const AppStateProvider = ({ children }) => {
     const [showOnboarding, setShowOnboarding] = useState(true);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [username, setUsername] = useState('Random User');
+    const [user, setUser] = useState(null);
 
     const updateShowOnboarding = (value) => {
         setShowOnboarding(value);
@@ -13,26 +13,23 @@ export const AppStateProvider = ({ children }) => {
 
     const updateIsLoggedIn = (value) => {
         setIsLoggedIn(value);
-        if(!value){
-            setUsername('Random User');
-        }
     }
 
-    const updateUsername = (value) => {
-        setUsername(value); // Add this line
+    const updateUser = (user) => {
+        setUser(user);
     }
 
     return (
-        <AppStateContext.Provider value={{ showOnboarding, updateShowOnboarding, isLoggedIn, updateIsLoggedIn, username, updateUsername }}>
+        <AppStateContext.Provider value={{ showOnboarding, updateShowOnboarding , isLoggedIn, updateIsLoggedIn, user, updateUser }}>
             {children}
         </AppStateContext.Provider>
     );
 }
 
 export const useAppState = () => {
-    const appState = useContext(AppStateContext); // Retrieve the app state from the context
+    const appState = useContext(AppStateContext);
     if (!appState) {
-        throw new Error("useAppState must be used within an AppStateProvider"); // Throw an error if the app state is undefined
+        throw new Error("useAppState must be used within an AppStateProvider");
     }
     return appState;
 };

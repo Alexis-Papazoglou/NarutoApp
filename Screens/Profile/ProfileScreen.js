@@ -5,24 +5,24 @@ import { FIREBASE_AUTH } from '../../firebase';
 import { signOut } from 'firebase/auth';
 
 export default function ProfileScreen({ navigation }) {
-  const { isLoggedIn, updateIsLoggedIn , username } = useAppState();  // Get isLoggedIn and user from global state
-  const [email, setEmail] = useState('demo');
-  const [profilePicture, setProfilePicture] = useState(null);
+  const { isLoggedIn, updateIsLoggedIn, user, updateUser } = useAppState();  // Get isLoggedIn and user from global state
+  const [email, setEmail] = useState();
+  const [username, setUsername] = useState();
 
   useEffect(() => {
-    // Use user data from Firebase auth
-    const user = FIREBASE_AUTH.currentUser;
     if (user) {
       setEmail(user.email);
-      setProfilePicture(user.photoURL);
+      setUsername(user.username);
     }
-  }, []);
+    console.log(user)
+  }, [user]);
 
   const handleLogout = () => {
     signOut(FIREBASE_AUTH)
       .then(() => {
         console.log('User signed out');
         updateIsLoggedIn(false); // Update isLoggedIn in global state
+        updateUser(null);
       })
       .catch((error) => {
         console.error('Sign out error', error);
@@ -46,11 +46,8 @@ export default function ProfileScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.profileContainer}>
-        {profilePicture && (
-          <Image source={{ uri: profilePicture }} style={styles.profilePicture} />
-        )}
-        <Text style={styles.email}>{email}</Text>
-        <Text style={styles.username}>{username}</Text>
+        <Text style={styles.email}>Email : {email}</Text>
+        <Text style={styles.username}>Username : {username}</Text>
         <TouchableOpacity
           style={styles.button}
           onPress={handleLogout}
@@ -61,6 +58,7 @@ export default function ProfileScreen({ navigation }) {
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {

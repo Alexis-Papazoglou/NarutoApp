@@ -7,7 +7,7 @@ import QuoteOfTheDay from '../../Components/QuoteOfTheDay';
 export default function HomeScreen() {
     const [loading, setLoading] = useState(true);
     const fadeAnim = useRef(new Animated.Value(0)).current; // Initial value for opacity: 0
-    const { isLoggedIn, username } = useAppState();
+    const { isLoggedIn, user } = useAppState();
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -39,8 +39,7 @@ export default function HomeScreen() {
                 <ScrollView contentContainerStyle={styles.scrollView}>
                     <View style={styles.welcomeContainer}>
                         <Text style={styles.welcomeText}>Welcome ,
-                            <Text style={styles.usernameText}> {username}</Text>
-                        </Text>
+                            <Text style={styles.usernameText}> {isLoggedIn ? user.username : 'Random User'}</Text>                        </Text>
                     </View>
                     <QuoteOfTheDay />
                 </ScrollView>

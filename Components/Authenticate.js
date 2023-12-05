@@ -1,23 +1,24 @@
 import { ActivityIndicator, StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth'
-import { FIREBASE_APP } from '../firebase'
+import { FIREBASE_APP, FIREBASE_DB } from '../firebase'
 import { useNavigation } from '@react-navigation/native';
 import { useAppState } from '../ContextProviders/AppStateProvider';
 import { utilsSeperateEmailFromUsername } from '../utils';
+import { doc , getDoc, setDoc } from "firebase/firestore";
 
 export default function Authenticate({ handleNextSlide }) {
-    const [username, setUsername] = useState('demo@gmail.com')
+    const [email, setEmail] = useState('demo@gmail.com')
     const [password, setPassword] = useState('demodemo')
     const [error, setError] = useState(null)
     const [isLoading, setIsLoading] = useState(false);  // New state variable
     const auth = getAuth(FIREBASE_APP)
     const navigation = useNavigation();
-    const { showOnboarding, updateShowOnboarding, updateIsLoggedIn, updateUsername } = useAppState();
+    const { showOnboarding, updateShowOnboarding, updateIsLoggedIn, updateUser } = useAppState();
 
     const handleLogin = () => {
         setIsLoading(true);
-        signInWithEmailAndPassword(auth, username, password)
+        signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 handleSuccess(userCredential.user, 'login');
             })
@@ -30,9 +31,19 @@ export default function Authenticate({ handleNextSlide }) {
 
     const handleCreateAccount = () => {
         setIsLoading(true);
-        createUserWithEmailAndPassword(auth, username, password)
+        createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
-                handleSuccess(userCredential.user, 'create account');
+                // Create a new user in your Users collection
+                setDoc(doc(FIREBASE_DB, "Users", userCredential.user.uid), {
+                    email: email,
+                    username: utilsSeperateEmailFromUsername(email),
+                }).then(() => {
+                    handleSuccess(userCredential.user, 'create account');
+                }).catch((error) => {
+                    console.log('Failed to create user document:', error);
+                    setError(error.message)
+                    setIsLoading(false);
+                });
             })
             .catch((error) => {
                 console.log('Account creation error:', error);
@@ -41,17 +52,26 @@ export default function Authenticate({ handleNextSlide }) {
             });
     }
 
-    const handleSuccess = (user, method) => {
+    const handleSuccess = async (user, method) => {
+        // Get the user document from Firestore
+        const docRef = doc(FIREBASE_DB, "Users", user.uid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            // Update the user in the global state with the Firestore user document
+            updateUser(docSnap.data());
+        } else {
+            console.log("No such document!");
+        }
+
         if (updateShowOnboarding) {
             updateShowOnboarding(false);
         }
         updateIsLoggedIn(true);
-        updateUsername(utilsSeperateEmailFromUsername(user.email));
         console.log('Success ' + method);
         if (showOnboarding) {
             navigation.navigate('Home');
-        }else
-        {
+        } else {
             navigation.navigate('ProfileScreen');
         }
         setIsLoading(false);
@@ -76,8 +96,8 @@ export default function Authenticate({ handleNextSlide }) {
                         style={styles.input}
                         placeholder="Email"
                         placeholderTextColor="darkgray"
-                        value={username}
-                        onChangeText={setUsername}
+                        value={email}
+                        onChangeText={setEmail}
                     />
                     <TextInput
                         style={styles.input}
