@@ -9,7 +9,6 @@ export default function BlogStack() {
         <Stack.Navigator initialRouteName="Home">
             <Stack.Screen name="BlogScreen" component={BlogScreen} options={{headerShown: false}} />
             <Stack.Screen name="SpecificArticle" component={SpecificArticle} options={{headerShown: false}} />
-            
         </Stack.Navigator>
     );
 }

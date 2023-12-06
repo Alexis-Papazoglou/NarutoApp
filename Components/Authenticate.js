@@ -35,6 +35,7 @@ export default function Authenticate({ handleNextSlide }) {
             .then((userCredential) => {
                 // Create a new user in your Users collection
                 setDoc(doc(FIREBASE_DB, "Users", userCredential.user.uid), {
+                    id: userCredential.user.uid,
                     email: email,
                     username: utilsSeperateEmailFromUsername(email),
                 }).then(() => {

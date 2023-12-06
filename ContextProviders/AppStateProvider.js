@@ -7,14 +7,21 @@ export const AppStateProvider = ({ children }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [user, setUser] = useState(null);
 
+    // value : true or false
     const updateShowOnboarding = (value) => {
         setShowOnboarding(value);
     }
 
+    // value : true or false
     const updateIsLoggedIn = (value) => {
         setIsLoggedIn(value);
     }
 
+    // user: {
+    //     id: string,
+    //     email: string,
+    //     username: string,
+    // }
     const updateUser = (user) => {
         setUser(user);
     }

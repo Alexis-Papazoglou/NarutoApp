@@ -6,11 +6,13 @@ import { signOut } from 'firebase/auth';
 
 export default function ProfileScreen({ navigation }) {
   const { isLoggedIn, updateIsLoggedIn, user, updateUser } = useAppState();  // Get isLoggedIn and user from global state
+  const [id, setId] = useState();
   const [email, setEmail] = useState();
   const [username, setUsername] = useState();
 
   useEffect(() => {
     if (user) {
+      setId(user.id);
       setEmail(user.email);
       setUsername(user.username);
     }
@@ -46,6 +48,7 @@ export default function ProfileScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.profileContainer}>
+        <Text style={styles.email}>id : {id}</Text>
         <Text style={styles.email}>Email : {email}</Text>
         <Text style={styles.username}>Username : {username}</Text>
         <TouchableOpacity
