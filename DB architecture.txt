@@ -1,0 +1,46 @@
+
+Firestore
+|
+|--- Users (Collection)
+|    |
+|    |--- userId (Document)
+|         |
+|         |--- userId: "ikf563kw"
+|         |--- username: "user1"
+|         |--- email: "user1@example.com"
+|
+|--- Articles (Collection)
+|    |
+|    |--- articleId (Document)
+|         |
+|	     |--- id: "er9ek3"
+|         |--- title: "Article Title"
+|         |--- authorId: "userId" (Reference to Users Collection -> userId field)
+|         |--- likes: 5
+|	     |--- comments: 5		
+|         |--- createdAt: timestamp
+|         |--- imageUrl: "https://..."
+|         |--- Sections (Subcollection)
+|              |
+|              |--- sectionId (Document)
+|                   |
+|                   |--- order: 0 // to indicate in witch order the sections need to appear
+|                   |--- title: "Section title" 
+|                   |--- content: "Section Content"
+|
+|--- Likes (Collection)
+|    |
+|    |--- likeId (Document)
+|         |
+|         |--- articleId: "articleId" (Reference to Articles Collection)
+|         |--- userId: "userId" (Reference to Users Collection -> userId field)
+|
+|--- Comments (Collection)
+     |
+     |--- commentId (Document)
+          |
+          |--- articleId: "articleId" (Reference to Articles Collection -> articleId field)
+          |--- text: "Comment Content"
+          |--- userId: "userId" (Reference to Users Collection -> userId field)
+          |--- username: "demo" (Reference to Users Collection -> username field)
+          |--- timestamp: "timestamp" 

@@ -5,9 +5,9 @@ import { FIREBASE_APP, FIREBASE_DB } from '../firebase'
 import { useNavigation } from '@react-navigation/native';
 import { useAppState } from '../ContextProviders/AppStateProvider';
 import { utilsSeperateEmailFromUsername } from '../utils';
-import { doc , getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
-export default function Authenticate({ handleNextSlide }) {
+export default function Authenticate({ route, handleNextSlide }) {
     const [email, setEmail] = useState('demo@gmail.com')
     const [password, setPassword] = useState('demodemo')
     const [error, setError] = useState(null)
@@ -15,6 +15,7 @@ export default function Authenticate({ handleNextSlide }) {
     const auth = getAuth(FIREBASE_APP)
     const navigation = useNavigation();
     const { showOnboarding, updateShowOnboarding, updateIsLoggedIn, updateUser } = useAppState();
+    const { article } = route?.params || {};
 
     const handleLogin = () => {
         setIsLoading(true);
@@ -69,11 +70,15 @@ export default function Authenticate({ handleNextSlide }) {
             updateShowOnboarding(false);
         }
         updateIsLoggedIn(true);
-        console.log('Success ' + method);
+        console.log('Authenticate : Successful ' + method);
         if (showOnboarding) {
             navigation.navigate('Home');
         } else {
-            navigation.navigate('ProfileScreen');
+            if (article) {
+                navigation.navigate('SpecificArticle', { article: article });
+            } else {
+                navigation.navigate('ProfileScreen');
+            }
         }
         setIsLoading(false);
     }
@@ -82,7 +87,11 @@ export default function Authenticate({ handleNextSlide }) {
         if (showOnboarding) {
             handleNextSlide();
         } else {
-            navigation.navigate('ProfileScreen');
+            if (article) {
+                navigation.navigate('SpecificArticle', { article: article });
+            } else {
+                navigation.navigate('ProfileScreen');
+            }
         }
     }
 

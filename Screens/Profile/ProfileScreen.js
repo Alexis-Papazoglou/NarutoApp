@@ -16,7 +16,6 @@ export default function ProfileScreen({ navigation }) {
       setEmail(user.email);
       setUsername(user.username);
     }
-    console.log(user)
   }, [user]);
 
   const handleLogout = () => {

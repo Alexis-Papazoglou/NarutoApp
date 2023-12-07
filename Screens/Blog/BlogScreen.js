@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, onSnapshot } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 import ArticleCard from '../../Components/Blog/ArticleCard';
 import { FIREBASE_DB } from '../../firebase';
@@ -10,14 +10,14 @@ export default function BlogScreen() {
   const [articles, setArticles] = useState([]);
 
   useEffect(() => {
-    const fetchArticles = async () => {
-      const articlesCollection = collection(FIREBASE_DB, 'Articles');
-      const articlesSnapshot = await getDocs(articlesCollection);
-      const articlesList = articlesSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+    const articlesCollection = collection(FIREBASE_DB, 'Articles');
+    const unsubscribe = onSnapshot(articlesCollection, (snapshot) => {
+      const articlesList = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
       setArticles(articlesList);
-    };
+    });
 
-    fetchArticles();
+    // Clean up the subscription on unmount
+    return () => unsubscribe();
   }, []);
 
   return (

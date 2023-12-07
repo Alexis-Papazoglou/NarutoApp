@@ -1,90 +1,96 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
-import { doc, updateDoc, addDoc, collection, deleteDoc, getDoc, increment, getDocs, query, where } from "firebase/firestore";
-import { FIREBASE_DB } from '../../firebase';
+// SpecificArticle.js
+import React from 'react';
+import { useState, useEffect } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View, Alert, Image, Animated, ScrollView } from 'react-native';
 import { useAppState } from '../../ContextProviders/AppStateProvider';
+import { useFetchArticle } from '../../Hooks/useFetchArticle';
+import { useLikeArticle } from '../../Hooks/useLikeArticle';
+import ArticleSections from '../../Components/Blog/ArticleSections';
+import CommentSection from '../../Components/Blog/CommentSection';
+import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 export default function SpecificArticle({ route }) {
-  const { user , isLoggedIn } = useAppState();
-  const { article } = route.params;
-  const [likeDoc, setLikeDoc] = useState(null);
-  const [likesCount, setLikesCount] = useState(0); // New state variable for likes count
+  const { user, isLoggedIn } = useAppState();
+  const { article, author } = route.params;
+  const { likeDoc, handleLike } = useLikeArticle(user?.id, article.id);
+  const { likesCount, updateLikes } = useFetchArticle(article.id);
+  // gets the number of comments from the CommentSection component so we don't have to fetch it again
+  const [numComments, setNumComments] = useState(0);
+  const navigation = useNavigation();
+  const [isLiked, setIsLiked] = useState(false);
+
+
+  const [scale, setScale] = useState(new Animated.Value(1));
 
   useEffect(() => {
-    const fetchArticleAndLikes = async () => {
-      const articleRef = doc(FIREBASE_DB, 'Articles', article.id);
-      const articleSnap = await getDoc(articleRef);
-      if (articleSnap.exists()) {
-        setLikesCount(articleSnap.data().likes || 0); // Update likes count
-      }
+    animateIcon();
+  }, [likeDoc]);
 
-      if (isLoggedIn && user) {
-        const likesCollectionRef = collection(FIREBASE_DB, 'Likes');
-        const likeSnap = await getDocs(query(likesCollectionRef, where('userId', '==', user.id), where('articleId', '==', article.id)));
-        if (!likeSnap.empty) {
-          setLikeDoc(likeSnap.docs[0]); // Set likeDoc to the first document snapshot that matches the query
-        }
-      }
-    };
-
-    fetchArticleAndLikes();
-  }, [isLoggedIn, user, article.id]);
-
-  const handleLike = async () => {
-    if (!isLoggedIn) {
-      Alert.alert('Please log in to like or dislike articles.');
-      return;
-    }
-
-    const articleRef = doc(FIREBASE_DB, 'Articles', article.id);
-
-    if (likeDoc && likeDoc.exists) { // Check if likeDoc exists
-      await deleteDoc(likeDoc.ref);
-      await updateDoc(articleRef, { likes: increment(-1) });
-      setLikeDoc(null);
-      setLikesCount((count) => count - 1); // Decrement likes count
-      console.log('Article unliked successfully'); // Log for successful unlike
-    } else {
-      const likeRef = await addDoc(collection(FIREBASE_DB, 'Likes'), {
-        userId: user.id,
-        articleId: article.id,
-      });
-      const newLikeSnap = await getDoc(likeRef);
-      await updateDoc(articleRef, { likes: increment(1) });
-      setLikeDoc(newLikeSnap); // Set likeDoc to the new document snapshot
-      setLikesCount((count) => count + 1); // Increment likes count
-      console.log('Article liked successfully'); // Log for successful like
-    }
+  const animateIcon = () => {
+    Animated.sequence([
+      Animated.timing(scale, {
+        toValue: 1.3,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scale, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+    ]).start();
   };
 
-  if (isLoggedIn) {
-    return (
-      <View style={styles.container}>
-        <Text>Article ID : {article.id}</Text>
-        {user && <Text>User ID : {user.id}</Text>}
-        <Text>Article likes : {likesCount}</Text>
-        <Text>Liked the doc : {likeDoc ? 'Yes' : 'No'}</Text>
-        <TouchableOpacity onPress={handleLike}>
-          <Text>{likeDoc ? 'Dislike' : 'Like'}</Text>
+  useEffect(() => {
+    setIsLiked(likeDoc && likeDoc.exists);
+  }, [likeDoc]);
+  
+  const handleLikeClick = async () => {
+    if (!isLoggedIn) {
+      Alert.alert(
+        'Not Logged In',
+        'Please log in to like or dislike articles.',
+        [
+          {text: 'Sign up', onPress: () => navigation.navigate('LoginScreen', { article: article })},
+          {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+        ],
+        { cancelable: false }
+      );
+      return;
+    }
+  
+    setIsLiked(!isLiked);
+    const wasLiked = await handleLike();
+    updateLikes(wasLiked ? 1 : -1);
+  };
+
+  return (
+    <ScrollView style={styles.container}>
+      <Text style={styles.text}>Author : {author ? author.username : 'Loading...'}</Text>
+      <Text style={styles.text}>Article title : {article.title}</Text>
+      {isLoggedIn && user && <Text style={styles.text}>User ID : {user.id}</Text>}
+      <Text style={styles.text}>Article likes : {likesCount}</Text>
+      <Text style={styles.text}>Article comments  : {numComments}</Text>
+      <Animated.View style={{ transform: [{ scale: scale }] }}>
+        <TouchableOpacity onPress={handleLikeClick}>
+          <Icon name="heart" size={108} color={(isLoggedIn && likeDoc && likeDoc.exists) ? 'red' : 'grey'} />
         </TouchableOpacity>
-      </View>
-    );
-  } else {
-    return (
-      <View style={styles.container}>
-        <Text>Article ID : {article.id}</Text>
-        <Text>Article likes : {likesCount}</Text>
-        <Text>You are not logged in</Text>
-        <TouchableOpacity onPress={handleLike}><Text>Like</Text></TouchableOpacity>
-      </View>
-    );
-  }
+      </Animated.View>
+      {article.imageUrl && <Image source={{ uri: article.imageUrl }} style={{ width: 40, height: 40 }} />}
+      <ArticleSections articleId={article.id} />
+      <CommentSection setNumComments={setNumComments} user={user} article={article} isLoggedIn={isLoggedIn} />
+    </ScrollView>
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 50,
+    marginTop: 30,
     flex: 1,
-    backgroundColor: 'white'
+    backgroundColor: 'black'
+  },
+  text: {
+    color: 'white'
   }
 });
