@@ -1,11 +1,12 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useAppState } from '../../ContextProviders/AppStateProvider';
 import { FIREBASE_AUTH } from '../../firebase';
 import { signOut } from 'firebase/auth';
+import ProfilePicture from '../../Components/ProfilePicture';
 
 export default function ProfileScreen({ navigation }) {
-  const { isLoggedIn, updateIsLoggedIn, user, updateUser } = useAppState();  // Get isLoggedIn and user from global state
+  const { isLoggedIn, updateIsLoggedIn, user, updateUser } = useAppState();
   const [id, setId] = useState();
   const [email, setEmail] = useState();
   const [username, setUsername] = useState();
@@ -22,7 +23,7 @@ export default function ProfileScreen({ navigation }) {
     signOut(FIREBASE_AUTH)
       .then(() => {
         console.log('User signed out');
-        updateIsLoggedIn(false); // Update isLoggedIn in global state
+        updateIsLoggedIn(false);
         updateUser(null);
       })
       .catch((error) => {
@@ -32,24 +33,24 @@ export default function ProfileScreen({ navigation }) {
 
   if (!isLoggedIn) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { justifyContent: 'center' }]}>
         <Text style={styles.notLoggedText}>Not logged</Text>
         <TouchableOpacity
           style={styles.button}
           onPress={() => navigation.navigate('LoginScreen')}
         >
-          <Text style={styles.buttonText}>Log In Now</Text>
+          <Text style={styles.buttonText}>Sign Up</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
+      <ProfilePicture userId = {user.id}/>
       <View style={styles.profileContainer}>
-        <Text style={styles.email}>id : {id}</Text>
-        <Text style={styles.email}>Email : {email}</Text>
         <Text style={styles.username}>Username : {username}</Text>
+        <Text style={styles.email}>Email : {email}</Text>
         <TouchableOpacity
           style={styles.button}
           onPress={handleLogout}
@@ -57,20 +58,21 @@ export default function ProfileScreen({ navigation }) {
           <Text style={styles.buttonText}>Log Out</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ScrollView>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
-    justifyContent: 'center',
     alignItems: 'center',
+    padding: 20,
+    paddingTop: 50,
   },
   profileContainer: {
     alignItems: 'center',
+    marginTop: 20,
   },
   profilePicture: {
     width: 150,
@@ -87,10 +89,12 @@ const styles = StyleSheet.create({
     color: 'orange',
     fontSize: 24,
     fontWeight: 'bold',
+    marginBottom: 20,
   },
   notLoggedText: {
     color: 'white',
     fontSize: 24,
+    marginBottom: 20,
   },
   button: {
     marginTop: 20,
@@ -111,5 +115,6 @@ const styles = StyleSheet.create({
     color: 'black',
     textAlign: 'center',
     fontSize: 18,
+    fontWeight: '600',
   },
 });

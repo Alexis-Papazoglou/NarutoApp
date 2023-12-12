@@ -61,7 +61,7 @@ export default function HomeScreen() {
                     <QuoteOfTheDay />
                     <Text style={styles.popular}>Popular Articles:</Text>
                     <View style={styles.articlesContainer}>
-                        {articles.slice(2, 4).map(article => (
+                        {[articles[0], articles[3]].map(article => (
                             <ArticleCard key={article.id} article={article} navigation={navigation} />
                         ))}
                     </View>

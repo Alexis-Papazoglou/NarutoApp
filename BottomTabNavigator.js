@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, TouchableOpacity , ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';  // Import Ionicons from Expo
 import HomeStack from './StackNavigation/HomeStack';
 import ExploreStack from './StackNavigation/ExploreStack';
@@ -8,10 +8,35 @@ import ProfileStack from './StackNavigation/ProfileStack';
 import BlogStack from './StackNavigation/BlogStack';
 import BottomNavigationAnimations from './AnimationComponents/BottomNavigationAnimations';
 import * as Haptics from 'expo-haptics';
+import { useAppState } from './ContextProviders/AppStateProvider';
+import { useState } from 'react';
+import { getFirestore, doc, onSnapshot } from "firebase/firestore";
+import { Image } from 'react-native';
 
 const Tab = createBottomTabNavigator();
 
 export default function BottomTabNavigator() {
+    const [profilePictureUrl, setProfilePictureUrl] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const { user } = useAppState();
+    const userId = user ? user.id : null;
+
+    useEffect(() => {
+        if (userId) {
+            setIsLoading(true);
+            const db = getFirestore();
+            const unsubscribe = onSnapshot(doc(db, 'Users', userId), (doc) => {
+                const data = doc.data();
+                if (data && data.profilePictureUrl) {
+                    setProfilePictureUrl(data.profilePictureUrl);
+                }
+                setIsLoading(false);
+            });
+
+            // Clean up the subscription on unmount
+            return () => unsubscribe();
+        }
+    }, [userId]);
 
     // this component exists here to create space between the 3rd and 4th tab
     // so we can display the animation component in the space
@@ -89,7 +114,11 @@ export default function BottomTabNavigator() {
                     options={{
                         headerShown: false,
                         tabBarIcon: ({ color, size }) => (
-                            <Ionicons name="person" color={color} size={size} />
+                            isLoading
+                                ? <ActivityIndicator size="small" color={color} />
+                                : userId && profilePictureUrl
+                                    ? <Image source={{ uri: profilePictureUrl }} style={[styles.imageStyle, { width: size+5, height: size+5, borderRadius: size + 5 / 2 }]} />
+                                    : <Ionicons name="person" color={color} size={size} />
                         ),
                     }}
                     listeners={{
@@ -120,5 +149,9 @@ const styles = StyleSheet.create({
     },
     decorativeTabBarButton: {
         flex: 1.5,
+    },
+    imageStyle: {
+        borderWidth: 1,
+        borderColor: 'orange',
     },
 });
