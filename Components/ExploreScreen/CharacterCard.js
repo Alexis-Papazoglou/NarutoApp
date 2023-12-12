@@ -8,7 +8,7 @@ export default function CharacterCard({ character, navigation, width, height }) 
     // Replace the imageSource with the local image path if the character
     // is Jiraiya because the API doesn't have a good image for him
     if (character.name === 'Jiraiya') {
-        imageSource = require('../assets/Jiraiya_main.jpg'); // replace with your local image path
+        imageSource = require('../../assets/Jiraiya_main.jpg'); 
     }
 
     return (

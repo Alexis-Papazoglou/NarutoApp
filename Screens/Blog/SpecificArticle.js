@@ -67,7 +67,7 @@ export default function SpecificArticle({ route }) {
 
   const handleCommentIconClick = () => {
     commentsRef.current.measure((x, y, width, height, pageX, pageY) => {
-      scrollViewRef.current.scrollTo({ y: pageY + 50, animated: true });
+      scrollViewRef.current.scrollToPosition(0, pageY + 100, true);
     });
   };
 

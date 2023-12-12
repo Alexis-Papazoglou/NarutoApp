@@ -10,7 +10,7 @@ export default function QuoteOfTheDay() {
         <View style={styles.container}>
             <Text style={styles.quoteText}>
                 <Text style={styles.todayText}>Today's </Text>
-                <Text style={styles.quoteColor}>Quote</Text>
+                <Text style={styles.quoteColor}>Quote:</Text>
             </Text>
             <View style={styles.shadow}>
                 <ImageBackground
@@ -69,7 +69,6 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 18,
         textAlign: 'right',
-        marginTop: 20,
         marginBottom: 10,
         zIndex: 1,
     },

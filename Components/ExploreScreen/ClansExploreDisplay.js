@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import useFetchAPI from '../../Hooks/useFetchAPI';
-import ClanCard from '../ClanCard';
+import ClanCard from './ClanCard';
 
 export default function ClansExploreDisplay({ navigation }) {
     const [clans, setClans] = useState(null);
@@ -20,18 +20,21 @@ export default function ClansExploreDisplay({ navigation }) {
     } else {
         return (
             <View style={styles.container}>
+                <View style={styles.header}>
+                    <Text style={styles.itemText}>Clans:</Text>
+                    <TouchableOpacity onPress={() => navigation.navigate('Clans')}>
+                        <Text style={styles.viewAllText}>View All</Text>
+                    </TouchableOpacity>
+                </View>
                 {clans.map((clan) => (
-                    <ClanCard 
-                        key={clan.id} 
-                        clan={clan} 
-                        navigation={navigation} 
+                    <ClanCard
+                        key={clan.id}
+                        clan={clan}
+                        navigation={navigation}
                         width={40} // replace with the desired width
                         height={40} // replace with the desired height
                     />
                 ))}
-                <TouchableOpacity onPress={() => navigation.navigate('Clans')}>
-                    <Text style={styles.viewAll}>View all</Text>
-                </TouchableOpacity>
             </View>
         );
     }
@@ -39,7 +42,8 @@ export default function ClansExploreDisplay({ navigation }) {
 
 const styles = StyleSheet.create({
     container: {
-        padding: 10,
+        marginTop: 10,
+        padding: 12,
         backgroundColor: '#121212', // Dark background
         gap: 10,
         borderRadius: 10, // Rounded corners
@@ -75,5 +79,19 @@ const styles = StyleSheet.create({
         color: '#fff', // White text
         textAlign: 'center',
         marginTop: 10,
+    },
+    itemText: {
+        fontSize: 20,
+        color: 'white',
+        paddingBottom: 4,
+    },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    viewAllText: {
+        color: 'orange',
+        fontSize: 18,
     },
 });

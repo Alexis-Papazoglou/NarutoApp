@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import CharacterCard from '../../Components/CharacterCard'; // adjust the path according to your project structure
+import CharacterCard from './CharacterCard'; 
 
 export default function CharacterExploreDisplay({ characters, navigation }) {
     return (

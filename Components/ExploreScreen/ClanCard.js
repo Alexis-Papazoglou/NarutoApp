@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import CharacterCard from './CharacterCard'
-import useFetchAPI from '../Hooks/useFetchAPI'
+import useFetchAPI from '../../Hooks/useFetchAPI'
 
 export default function ClanCard({ clan, navigation, width, height }) {
   const [characters, setCharacters] = useState([]);
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 3,
     borderColor: 'orange',
-    borderWidth: 0.8,
+    borderWidth: 1,
   },
   textContainer: {
     flex: 1,

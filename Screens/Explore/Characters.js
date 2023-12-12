@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, TextInput, FlatList, TouchableOpacity } from 'react-native'
 import React, { useState, useEffect } from 'react'
-import CharacterCard from '../../Components/CharacterCard'
+import CharacterCard from '../../Components/ExploreScreen/CharacterCard'
 import { useNavigation } from '@react-navigation/native'
 import useFetchAllCharacters from '../../Hooks/useFetchAllCharacters'
 

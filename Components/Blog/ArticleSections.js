@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 export default function ArticleSections({ articleId }) {
     const { sections , loading} = useFetchArticleSections(articleId);
-    const [expandedSection, setExpandedSection] = useState(null);
+    const [expandedSection, setExpandedSection] = useState(0);
 
     const handlePress = (index) => {
         setExpandedSection(index === expandedSection ? null : index);

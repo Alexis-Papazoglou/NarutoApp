@@ -8,7 +8,7 @@ import ClansExploreDisplay from '../../Components/ExploreScreen/ClansExploreDisp
 
 export default function ExploreScreen() {
     const [loading, setLoading] = useState(true);
-    const { data: characters,  error } = useFetchAPI('characters');
+    const { data: characters, error } = useFetchAPI('characters');
     const fadeAnim = useRef(new Animated.Value(0)).current; // Initial value for opacity: 0
     const navigation = useNavigation();
 
@@ -44,6 +44,11 @@ export default function ExploreScreen() {
         return (
             <Animated.View style={{ ...styles.container, opacity: fadeAnim }}>
                 <ScrollView contentContainerStyle={styles.scrollView}>
+                    <View style={styles.textContainer}>
+                        <Text style={styles.header}>Explore Our Collection</Text>
+                        <Text style={styles.text}>Dive into a curated collection brought to you by the curator.</Text>
+                        <Text style={styles.text}>Click on an item to explore and enjoy the content.</Text>
+                    </View>
                     <CharacterExploreDisplay characters={characters} navigation={navigation} />
                     <ClansExploreDisplay navigation={navigation} />
                 </ScrollView>
@@ -55,14 +60,15 @@ export default function ExploreScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        marginTop: 30,
         backgroundColor: 'black',
         justifyContent: 'center',
     },
     scrollView: {
-        flex: 1,  // Take up the entire screen
         width: '100%',
         paddingVertical: 20,  // Add some padding
         paddingHorizontal: 10,  // Add some padding
+        paddingBottom: 120,  // Add some padding
     },
     characterCardsContainer: {
         alignItems: 'center',
@@ -88,13 +94,22 @@ const styles = StyleSheet.create({
         elevation: 5, // for Android
     },
     header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    viewAllText: {
+        fontSize: 24,
+        fontWeight: 'bold',
         color: 'orange',
-        fontSize: 18,
-        marginBottom: 12,
+        textAlign: 'center',
+    },
+    text: {
+        color: 'white',
+        textAlign: 'center',
+        width: '85%',
+    },
+    textContainer: {
+        alignSelf: 'center',
+        width: '80%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 10,
+        paddingBottom: 10,
     },
 });
