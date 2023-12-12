@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import CharacterCard from './CharacterCard'
 import useFetchAPI from '../Hooks/useFetchAPI'
 
-export default function ClanCard({ clan, navigation }) {
+export default function ClanCard({ clan, navigation, width, height }) {
   const [characters, setCharacters] = useState([]);
   const { data: characterData, loading } = clan.characters && clan.characters[0] ? useFetchAPI(`characters/${clan.characters[0]}`) : { data: null, loading: false };
   const { data: characterData2, loading: loading2 } = clan.characters && clan.characters[1] ? useFetchAPI(`characters/${clan.characters[1]}`) : { data: null, loading: false };
@@ -25,8 +25,8 @@ export default function ClanCard({ clan, navigation }) {
           <Text style={styles.name}>{clan.name} Clan</Text>
         </View>
         <View style={styles.rightContainer}>
-          {characters.length > 0 && <CharacterCard character={characters[0].data} navigation={navigation} />}
-          {characters.length > 1 && <CharacterCard character={characters[1].data} navigation={navigation} />}
+          {characters.length > 0 && <CharacterCard width={width} height={height} character={characters[0].data} navigation={navigation} />}
+          {characters.length > 1 && <CharacterCard width={width} height={height} character={characters[1].data} navigation={navigation} />}
         </View>
       </View>
     </TouchableOpacity>
@@ -65,9 +65,10 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'flex-end',
+    alignItems: 'center',
     height: '100%',
     gap: 10,
+    marginRight: 10,
   },
   name: {
     fontSize: 12,

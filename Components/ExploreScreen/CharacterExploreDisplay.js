@@ -29,10 +29,15 @@ const styles = StyleSheet.create({
         marginVertical: 10, // Add some margin between the cards
         paddingBottom: 18, // Add some padding
         shadowColor: 'orange',
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.25,
-        shadowRadius: 10,
-        elevation: 5, // for Android
+        shadowOffset: {
+            width: 0,
+            height: 0,
+        },
+        shadowOpacity: 0.3,
+        shadowRadius: 3.84,
+        elevation: 3,
+        borderColor: 'black',
+        borderWidth: 1,
     },
     header: {
         flexDirection: 'row',

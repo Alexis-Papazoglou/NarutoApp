@@ -60,22 +60,31 @@ const styles = StyleSheet.create({
     container: {
         padding: 10,
         backgroundColor: '#111',
+        margin: 10,
+        borderRadius: 10,
+        shadowColor: 'orange', // Set the shadow color to orange
+        shadowOffset: { width: 0, height: 0 }, // Set the shadow offset
+        shadowOpacity: 0.3, // Set the shadow opacity
+        shadowRadius: 8, // Set the shadow radius
+        elevation: 5, // This is needed for Android
     },
     header: {
         color: 'white',
         fontSize: 20,
         fontWeight: 'bold',
+        marginBottom: 10,
     },
     inputContainer: {
         marginBottom: 10,
     },
     input: {
         height: 40,
-        borderColor: 'gray',
+        borderColor: '#707070',
         borderWidth: 1,
         marginBottom: 10,
         padding: 5,
-        color: 'white',
+        color: '#707070',
+        borderRadius: 5,
     },
     commentCount: {
         marginBottom: 10,
@@ -98,7 +107,7 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 5,
         marginBottom: 10,
-        width: 140,
+        width: '100%',
     },
     btnText: {
         color: 'black',

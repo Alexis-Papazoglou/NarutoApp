@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, ImageBackground, TouchableOpacity, ActivityIndicator } from 'react-native'
 import React, { useState } from 'react'
 
-export default function CharacterCard({ character, navigation }) {
+export default function CharacterCard({ character, navigation, width, height }) {
     const [isLoading, setIsLoading] = useState(true);
     let imageSource = character.images[1] ? { uri: character.images[1] } : { uri: character.images[0] };
 
@@ -12,7 +12,14 @@ export default function CharacterCard({ character, navigation }) {
     }
 
     return (
-        <TouchableOpacity style={styles.container} onPress={() => navigation.navigate('SpecificCharacter', { character })}>
+        <TouchableOpacity
+            style={{
+                ...styles.container,
+                width: width || styles.container.width,
+                height: height || styles.container.height
+            }}
+            onPress={() => navigation.navigate('SpecificCharacter', { character })}
+        >
             <ImageBackground
                 imageStyle={{ borderRadius: 10 }}
                 style={styles.image}
@@ -43,11 +50,11 @@ const styles = StyleSheet.create({
             width: 0,
             height: 0,
         },
-        shadowOpacity: 0.7,
+        shadowOpacity: 0.5,
         shadowRadius: 5.84,
         elevation: 3,
         borderColor: 'orange',
-        borderWidth: 0.8,
+        borderWidth: 1,
     },
     textContainer: {
         flex: 1,
