@@ -4,7 +4,7 @@ import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } f
 import { FIREBASE_APP, FIREBASE_DB } from '../firebase'
 import { useNavigation } from '@react-navigation/native';
 import { useAppState } from '../ContextProviders/AppStateProvider';
-import { utilsSeperateEmailFromUsername } from '../utils';
+import { utilsSeperateEmailFromUsername , utilsCheckUsername } from '../utils';
 import { doc, getDoc, setDoc } from "firebase/firestore";
 
 export default function Authenticate({ route, handleNextSlide }) {
@@ -33,12 +33,15 @@ export default function Authenticate({ route, handleNextSlide }) {
     const handleCreateAccount = () => {
         setIsLoading(true);
         createUserWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
+            .then(async (userCredential) => {
+                // Check if the username exists and get a new username if it does
+                const username = await utilsCheckUsername(utilsSeperateEmailFromUsername(email , 'create account'));
+
                 // Create a new user in your Users collection
                 setDoc(doc(FIREBASE_DB, "Users", userCredential.user.uid), {
                     id: userCredential.user.uid,
                     email: email,
-                    username: utilsSeperateEmailFromUsername(email),
+                    username: username, 
                 }).then(() => {
                     handleSuccess(userCredential.user, 'create account');
                 }).catch((error) => {
@@ -52,7 +55,7 @@ export default function Authenticate({ route, handleNextSlide }) {
                 setError(error.message)
                 setIsLoading(false);
             });
-    }
+    };
 
     const handleSuccess = async (user, method) => {
         // Get the user document from Firestore

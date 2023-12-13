@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Image , ImageBackground } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Image, ImageBackground } from 'react-native';
 
-import { doc, getDoc } from 'firebase/firestore';
+import { onSnapshot , doc } from 'firebase/firestore';
 import { FIREBASE_DB } from '../../firebase';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -10,12 +10,13 @@ export default function ArticleCard({ article, navigation }) {
   const [author, setAuthor] = useState(null);
 
   useEffect(() => {
-    const fetchAuthor = async () => {
-      const userDoc = await getDoc(doc(FIREBASE_DB, 'Users', article.authorId));
-      setAuthor(userDoc.data());
-    };
+    const userRef = doc(FIREBASE_DB, 'Users', article.authorId);
+    const unsubscribe = onSnapshot(userRef, (doc) => {
+      setAuthor(doc.data());
+    });
 
-    fetchAuthor();
+    // Clean up the subscription on unmount
+    return () => unsubscribe();
   }, [article.authorId]);
 
   return (

@@ -1,15 +1,21 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, TextInput, Alert } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useAppState } from '../../ContextProviders/AppStateProvider';
-import { FIREBASE_AUTH } from '../../firebase';
+import { FIREBASE_AUTH, FIREBASE_DB } from '../../firebase';
 import { signOut } from 'firebase/auth';
-import ProfilePicture from '../../Components/ProfilePicture';
+import { collectionGroup, query, where, getDocs, updateDoc, doc } from 'firebase/firestore';
+import ProfilePicture from '../../Components/Profile/ProfilePicture';
+import LikedAndCommented from '../../Components/Profile/LikedAndCommented';
+import { AntDesign } from '@expo/vector-icons';
+import { utilsCheckUsername } from '../../utils';
 
 export default function ProfileScreen({ navigation }) {
   const { isLoggedIn, updateIsLoggedIn, user, updateUser } = useAppState();
   const [id, setId] = useState();
   const [email, setEmail] = useState();
   const [username, setUsername] = useState();
+  const [newUsername, setNewUsername] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -18,6 +24,12 @@ export default function ProfileScreen({ navigation }) {
       setUsername(user.username);
     }
   }, [user]);
+
+  useEffect(() => {
+    if (!isEditing) {
+      setNewUsername('');
+    }
+  }, [isEditing]);
 
   const handleLogout = () => {
     signOut(FIREBASE_AUTH)
@@ -28,6 +40,38 @@ export default function ProfileScreen({ navigation }) {
       })
       .catch((error) => {
         console.error('Sign out error', error);
+      });
+  };
+
+  const handleUsernameUpdate = async () => {
+    // Check if the username exists and get a new username if it does
+    const checkedUsername = await utilsCheckUsername(newUsername, 'update username');
+  
+    if (checkedUsername === 'Username already exists') {
+      Alert.alert('Error', 'Username already exists');
+      return;
+    }
+  
+    const userRef = doc(FIREBASE_DB, 'Users', id);
+    updateDoc(userRef, { username: checkedUsername })
+      .then(() => {
+        console.log('Username updated');
+        setUsername(checkedUsername);
+        setIsEditing(false);
+        Alert.alert('Success', 'Username updated successfully');
+  
+        // Update username in all user's comments
+        const commentsQuery = query(collectionGroup(FIREBASE_DB, 'Comments'), where('userId', '==', id));
+        getDocs(commentsQuery)
+          .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+              updateDoc(doc.ref, { username: checkedUsername });
+              console.log('Comment username updated');
+            });
+          });
+      })
+      .catch((error) => {
+        console.error('Error updating username: ', error);
       });
   };
 
@@ -43,35 +87,73 @@ export default function ProfileScreen({ navigation }) {
         </TouchableOpacity>
       </View>
     );
+  } else {
+    return (
+      <ScrollView contentContainerStyle={styles.container}>
+        <ProfilePicture userId={user.id} />
+        <View style={styles.profileContainer}>
+          <View style={[styles.usernameContainer, { flexDirection: isEditing ? 'column' : 'row' }]}>
+            <Text style={styles.usernameLabel}>Username : </Text>
+            <Text style={[styles.usernameValue, { margin: !isEditing ? 0 : 5 }]}>{username}</Text>
+            {isEditing ? (
+              <>
+                <TextInput
+                  style={styles.input}
+                  value={newUsername}
+                  onChangeText={setNewUsername}
+                  placeholder="New username"
+                  placeholderTextColor="gray"
+                />
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={handleUsernameUpdate}
+                >
+                  <Text style={styles.buttonText}>Update Username</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.usernameIcon}
+                  onPress={() => setIsEditing(false)}
+                >
+                  <AntDesign name="close" size={14} color="black" />
+                </TouchableOpacity>
+              </>
+            ) : (
+              <TouchableOpacity
+                style={styles.usernameIcon}
+                onPress={() => setIsEditing(true)}
+              >
+                <AntDesign name="edit" size={14} color="black" />
+              </TouchableOpacity>
+            )}
+          </View>
+          <View style={styles.emailContainer}>
+            <Text style={styles.emailLabel}>Email : </Text>
+            <Text style={styles.emailValue}>{email}</Text>
+          </View>
+          <LikedAndCommented user={user} />
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleLogout}
+          >
+            <Text style={styles.buttonText}>Log Out</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    );
   }
-
-  return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <ProfilePicture userId = {user.id}/>
-      <View style={styles.profileContainer}>
-        <Text style={styles.username}>Username : {username}</Text>
-        <Text style={styles.email}>Email : {email}</Text>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={handleLogout}
-        >
-          <Text style={styles.buttonText}>Log Out</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
-  );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: 'black',
     alignItems: 'center',
-    padding: 20,
-    paddingTop: 50,
+    padding: 10,
+    marginTop: 30,
+    paddingBottom: 150,
   },
   profileContainer: {
     alignItems: 'center',
+    justifyContent: 'center',
     marginTop: 20,
   },
   profilePicture: {
@@ -80,16 +162,32 @@ const styles = StyleSheet.create({
     borderRadius: 75,
     marginBottom: 20,
   },
-  email: {
+  emailContainer: {
+    flexDirection: 'row',
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  emailLabel: {
+    fontWeight: 'bold',
+    textAlign: 'center',
     color: 'white',
     fontSize: 18,
-    marginBottom: 10,
   },
-  username: {
+  emailValue: {
     color: 'orange',
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 20,
+    textAlign: 'center',
+  },
+  usernameLabel: {
+    color: 'white',
+    fontSize: 22,
+    fontWeight: 'bold',
+  },
+  usernameValue: {
+    color: 'orange',
+    fontSize: 22,
+    fontWeight: 'bold',
   },
   notLoggedText: {
     color: 'white',
@@ -116,5 +214,32 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 18,
     fontWeight: '600',
+  },
+  input: {
+    height: 40,
+    width: 150,
+    borderColor: 'gray',
+    borderWidth: 1,
+    color: 'white',
+    paddingHorizontal: 10,
+    borderRadius: 10,
+    textAlign: 'center',
+  },
+  usernameContainer: {
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  usernameIcon: {
+    position: 'absolute',
+    top: '15%',
+    right: '-10%',
+    backgroundColor: 'orange',
+    width: 22,
+    height: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 15,
   },
 });

@@ -3,11 +3,12 @@ import React, { useEffect } from 'react';
 import { Text, TextInput, TouchableOpacity, StyleSheet, View } from 'react-native';
 import { useCommentArticle } from '../../Hooks/useCommentArticle';
 import { useNavigation } from '@react-navigation/native';
+import { utilsConvertTimestamp } from '../../utils/';
 
-export default function CommentSection({ user, article, isLoggedIn , setNumComments}) {
+export default function CommentSection({ user, article, isLoggedIn, setNumComments }) {
     const { comments, newCommentText, setNewCommentText, addComment, commentsCount } = useCommentArticle(user, article.id);
     const navigation = useNavigation();
-    
+
     // sets the state of the parent component (SpecificArticle.js)
     useEffect(() => {
         setNumComments(commentsCount);
@@ -44,12 +45,15 @@ export default function CommentSection({ user, article, isLoggedIn , setNumComme
                 </View>
             )}
             <Text style={styles.commentCount}>Number of comments: {commentsCount}</Text>
-            {comments.map((comment, index) => (
+            {comments.sort((a, b) => a.timestamp - b.timestamp).map((comment, index) => (
                 <View key={index} style={styles.comment}>
-                    <Text>
-                        <Text style={styles.commentUser}>{comment.username}:</Text>
+                    <View style={styles.commentHeader}>
+                        <Text style={styles.commentUser}>{comment.username}</Text>
+                        <Text style={styles.timestamp}> {utilsConvertTimestamp(comment.timestamp)}</Text>
+                    </View>
+                    <View style={styles.commentBody}>
                         <Text style={styles.commentText}> {comment.text}</Text>
-                    </Text>
+                    </View>
                 </View>
             ))}
         </View>
@@ -83,7 +87,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         marginBottom: 10,
         padding: 5,
-        color: '#707070',
+        color: 'white',
         borderRadius: 5,
     },
     commentCount: {
@@ -92,12 +96,22 @@ const styles = StyleSheet.create({
         color: 'orange',
     },
     comment: {
-        flexDirection: 'row',
         marginBottom: 5,
+    },
+    commentHeader: {
+        flexDirection: 'row',
+        alignItems: 'flex-end',
     },
     commentUser: {
         fontWeight: 'bold',
         color: 'white',
+    },
+    timestamp: {
+        color: 'grey',
+        fontSize: 12,
+    },
+    commentBody: {
+        marginVertical: 5,
     },
     commentText: {
         color: 'white',
