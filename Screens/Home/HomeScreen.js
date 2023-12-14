@@ -46,9 +46,7 @@ export default function HomeScreen() {
 
     if (loading) {
         return (
-            <View style={styles.container}>
-                <LoadingAnimation />
-            </View>
+            <LoadingAnimation />
         );
     } else {
         return (
@@ -56,7 +54,7 @@ export default function HomeScreen() {
                 <ScrollView contentContainerStyle={styles.scrollView}>
                     <View style={styles.welcomeContainer}>
                         <Text style={styles.welcomeText}>Welcome ,
-                            <Text style={styles.usernameText}> {isLoggedIn ? user.username : 'Random User'}</Text>                        </Text>
+                            <Text style={styles.usernameText}> {isLoggedIn ? user?.username : 'Random User'}</Text>                        </Text>
                     </View>
                     <QuoteOfTheDay />
                     <Text style={styles.popular}>Popular Articles:</Text>

@@ -36,9 +36,7 @@ export default function ExploreScreen() {
 
     if (loading) {
         return (
-            <View style={styles.container}>
-                <LoadingAnimation onAnimationEnd={handleAnimationEnd} />
-            </View>
+            <LoadingAnimation onAnimationEnd={handleAnimationEnd} />
         );
     } else {
         return (

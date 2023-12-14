@@ -116,7 +116,7 @@ export default function BottomTabNavigator() {
                         tabBarIcon: ({ color, size }) => (
                             isLoading
                                 ? <ActivityIndicator size="small" color={color} />
-                                : userId && profilePictureUrl
+                                : user && profilePictureUrl
                                     ? <Image source={{ uri: profilePictureUrl }} style={[styles.imageStyle, { width: size+5, height: size+5, borderRadius: size + 5 / 2 }]} />
                                     : <Ionicons name="person" color={color} size={size} />
                         ),
