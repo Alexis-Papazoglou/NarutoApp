@@ -9,9 +9,14 @@ export default function ClanCard({ clan, navigation, width, height }) {
   const { data: characterData2, loading: loading2 } = clan.characters && clan.characters[1] ? useFetchAPI(`characters/${clan.characters[1]}`) : { data: null, loading: false };
 
   useEffect(() => {
-    if (characterData && characterData2) {
-      setCharacters([{ data: characterData, loading }, { data: characterData2, loading: loading2 }]);
+    let characters = [];
+    if (characterData) {
+      characters.push({ data: characterData, loading });
     }
+    if (characterData2) {
+      characters.push({ data: characterData2, loading: loading2 });
+    }
+    setCharacters(characters);
   }, [characterData, characterData2, loading, loading2]);
 
   if (loading || loading2) {
@@ -25,8 +30,8 @@ export default function ClanCard({ clan, navigation, width, height }) {
           <Text style={styles.name}>{clan.name} Clan</Text>
         </View>
         <View style={styles.rightContainer}>
-          {characters.length > 0 && <CharacterCard width={width} height={height} character={characters[0].data} navigation={navigation} />}
-          {characters.length > 1 && <CharacterCard width={width} height={height} character={characters[1].data} navigation={navigation} />}
+          {characters.length > 0 && characters[0].data && <CharacterCard width={width} height={height} character={characters[0].data} navigation={navigation} />}
+          {characters.length > 1 && characters[1].data && <CharacterCard width={width} height={height} character={characters[1].data} navigation={navigation} />}
         </View>
       </View>
     </TouchableOpacity>

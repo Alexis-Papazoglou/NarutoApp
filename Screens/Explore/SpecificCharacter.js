@@ -58,7 +58,9 @@ export default function SpecificCharacter({ route }) {
                 <Image
                     source={character.name.toLowerCase() === 'jiraiya'
                         ? require('../../assets/Jiraiya_main.jpg')
-                        : { uri: character.images[1] ? character.images[1] : character.images[0] }}
+                        : character.images && Array.isArray(character.images) && (character.images[1] || character.images[0])
+                            ? { uri: character.images[1] ? character.images[1] : character.images[0] }
+                            : require('../../assets/NoImage.png')}
                     style={styles.image}
                     onLoadStart={() => setIsLoading(true)}
                     onLoadEnd={() => setIsLoading(false)}

@@ -3,12 +3,16 @@ import React, { useState } from 'react'
 
 export default function CharacterCard({ character, navigation, width, height }) {
     const [isLoading, setIsLoading] = useState(true);
-    let imageSource = character.images[1] ? { uri: character.images[1] } : { uri: character.images[0] };
-
+    let imageSource;
+    if (character.images && Array.isArray(character.images)) {
+        imageSource = character.images[1] ? { uri: character.images[1] } : character.images[0] ? { uri: character.images[0] } : require('../../assets/NoImage.png');
+    } else {
+        imageSource = require('../../assets/NoImage.png');
+    }
     // Replace the imageSource with the local image path if the character
     // is Jiraiya because the API doesn't have a good image for him
     if (character.name === 'Jiraiya') {
-        imageSource = require('../../assets/Jiraiya_main.jpg'); 
+        imageSource = require('../../assets/Jiraiya_main.jpg');
     }
 
     return (

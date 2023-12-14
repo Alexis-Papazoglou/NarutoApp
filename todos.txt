@@ -1,0 +1,4 @@
+images for android :   resizeMode={"cover"} // <- needs to be "cover" for borderRadius to take effect on Android
+remove AuthAnimations
+explore screen for clans etc
+android testing

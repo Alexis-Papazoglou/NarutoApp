@@ -10,7 +10,6 @@ export const AppStateProvider = ({ children }) => {
     const [showOnboarding, setShowOnboarding] = useState(null);
 
     // Load user data from AsyncStorage
-    // This useEffect is messy because i had a bug i could not fix other way
     useEffect(() => {
         const loadUserData = async () => {
             const getData = async () => {
@@ -36,7 +35,7 @@ export const AppStateProvider = ({ children }) => {
         loadUserData();
     }, []);
 
-
+    // Wait for showOnboarding to be set true or false
     useEffect(() => {
         if (showOnboarding !== null) {
             console.log('Context : showOnboarding ->', showOnboarding)
