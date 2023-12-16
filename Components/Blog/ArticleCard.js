@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Image, ImageBackground } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Image, ImageBackground , Platform } from 'react-native';
 
 import { onSnapshot , doc } from 'firebase/firestore';
 import { FIREBASE_DB } from '../../firebase';
@@ -56,6 +56,7 @@ const styles = StyleSheet.create({
     elevation: 5, // add elevation for Android
     borderColor: 'orange',
     borderWidth: 1,
+    ...(Platform.OS === 'ios' ? {} : { margin: 15 }), // Add margin for Android
   },
   title: {
     position: 'absolute',
@@ -72,6 +73,7 @@ const styles = StyleSheet.create({
   },
   text: {
     color: 'white',
+    ...Platform.OS === 'ios' ? {} : {marginHorizontal: 6}, // Add margin for Android
   },
   titleText: {
     fontSize: 14,
@@ -85,13 +87,13 @@ const styles = StyleSheet.create({
   iconsContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 10,
+    ...(Platform.OS === 'ios' ? { gap: 10 } : {margin: 0}), // Use gap for iOS, margin for Android
     width: '100%',
   },
   iconContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
+    ...(Platform.OS === 'ios' ? { gap: 5 } : { margin: 0 }), // Use gap for iOS, margin for Android
   },
   image: {
     flex: 1,

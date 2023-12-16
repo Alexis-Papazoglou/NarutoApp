@@ -29,7 +29,7 @@ export default function Slide1Animation() {
                     backgroundColor: 'black',
                 }}
                 source={require('../assets/animationSlide1.json')}
-                autoPlay={false}
+                autoPlay={true}
                 loop={true}
             />
         </Animated.View>

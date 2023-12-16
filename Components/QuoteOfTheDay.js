@@ -12,9 +12,8 @@ export default function QuoteOfTheDay() {
                 <Text style={styles.todayText}>Today's </Text>
                 <Text style={styles.quoteColor}>Quote:</Text>
             </Text>
-            <View style={styles.shadow}>
+            <View style={{ ...styles.shadow, overflow: 'hidden' }}>
                 <ImageBackground
-                    borderRadius={10}
                     source={quotes.quotes[randomQuote].gif_path}
                     style={styles.background}
                     onLoadEnd={() => setIsLoading(false)}

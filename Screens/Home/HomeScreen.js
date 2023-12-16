@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, Text, Animated, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, Animated, ScrollView, Platform } from 'react-native';
 import LoadingAnimation from '../../AnimationComponents/LoadingAnimation';
 import { useAppState } from '../../ContextProviders/AppStateProvider';
 import QuoteOfTheDay from '../../Components/QuoteOfTheDay';
@@ -58,11 +58,11 @@ export default function HomeScreen() {
                     </View>
                     <QuoteOfTheDay />
                     <Text style={styles.popular}>Popular Articles:</Text>
-                    <View style={styles.articlesContainer}>
+                    {articles && articles.length >3 && <View style={styles.articlesContainer}>
                         {[articles[0], articles[3]].map(article => (
                             <ArticleCard key={article.id} article={article} navigation={navigation} />
                         ))}
-                    </View>
+                    </View>}
                 </ScrollView>
             </Animated.View>
         );
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'center',
-        gap: '30%',
+        ...(Platform.OS === 'ios' ? { gap: '30%' } : {}), // Use gap for iOS, margin for Android
         width: '100%',
-    }
+    },
 });

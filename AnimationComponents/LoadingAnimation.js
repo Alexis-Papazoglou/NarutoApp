@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { Animated, StyleSheet } from 'react-native';
+import { Animated, StyleSheet , View } from 'react-native';
 import LottieView from 'lottie-react-native';
 
 export default function LoadingAnimation({ onAnimationEnd }) {
@@ -25,13 +25,16 @@ export default function LoadingAnimation({ onAnimationEnd }) {
   return (
     <Animated.View style={styles.container}>
       <Animated.View style={[styles.animationContainer, { opacity: fadeAnim }]}>
-        <LottieView
-          ref={animation1}
-          style={styles.animation1}
-          source={require('../assets/loadingNaruto.json')}
-          autoPlay={false}
-          loop={true}
-        />
+        <View style={{ borderRadius: 120, overflow: 'hidden' }}>
+          <LottieView
+            ref={animation1}
+            style={styles.animation1}
+            source={require('../assets/loadingNaruto.json')}
+            autoPlay={true}
+            loop={true}
+            onLoad={() => animation1.current.play()}
+          />
+        </View>
         <LottieView
           speed={1.7}
           ref={animation2}

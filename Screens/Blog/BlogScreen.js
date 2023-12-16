@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View} from 'react-native';
+import { ScrollView, StyleSheet, Text, View , Platform} from 'react-native';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 import ArticleCard from '../../Components/Blog/ArticleCard';
@@ -42,14 +42,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 10,
+    ...(Platform.OS === 'ios' ? { gap: 10 } : {}), // Use gap for iOS, margin for Android
     paddingBottom: 150,
   },
   textContainer: {
     width: '80%',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 10
+    ...(Platform.OS === 'ios' ? { gap: 10 } : {}), // Use gap for iOS, margin for Android
   },
   header: {
     fontSize: 24,
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    gap: '30%',
+    ...(Platform.OS === 'ios' ? { gap: '30%' } : {}), // Use gap for iOS, margin for Android
     width: '100%',
     marginTop: 20
   }

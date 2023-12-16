@@ -86,11 +86,13 @@ export default function BottomNavigationAnimations() {
     return (
         <TouchableWithoutFeedback onPressIn={handlePressIn} onPressOut={handlePressOut}>
             <Animated.View style={containerStyle}>
-                <Animated.Image imageStyle={{ borderRadius: 50}} style={{ ...styles.gifStyle, opacity: fadeAnim }} source={currentGif} />
+                <View style={{ borderRadius: 50, overflow: 'hidden' }}>
+                    <Animated.Image style={{ ...styles.gifStyle, opacity: fadeAnim }} source={currentGif} />
+                </View>
                 <View style={styles.borderTop} />
             </Animated.View>
         </TouchableWithoutFeedback>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
