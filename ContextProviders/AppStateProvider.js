@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { FIREBASE_AUTH } from '../firebase'; // adjust the path as needed
 
 export const AppStateContext = createContext();
 
@@ -9,66 +10,36 @@ export const AppStateProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [showOnboarding, setShowOnboarding] = useState(null);
 
-    // Load user data from AsyncStorage
     useEffect(() => {
-        const loadUserData = async () => {
-            const getData = async () => {
-                try {
-                    const jsonValue = await AsyncStorage.getItem('user');
-                    return jsonValue != null ? JSON.parse(jsonValue) : null;
-                } catch (e) {
-                    console.log('Context : error ->', e)
-                }
-            };
-            const data = await getData();
-            console.log('Context : data ->', data)
-            if (data) {
-                setUser(data);
+        setIsAppLoading(true);
+        const unsubscribe = FIREBASE_AUTH.onAuthStateChanged(async (user) => {
+            if (user) {
+                // User is signed in.
+                setUser(user);
                 setIsLoggedIn(true);
                 setShowOnboarding(false);
-            }
-            else {
+                await AsyncStorage.setItem('user', JSON.stringify(user));
+            } else {
+                // No user is signed in.
                 setShowOnboarding(true);
             }
-        };
+            setIsAppLoading(false);
+        });
 
-        loadUserData();
+        // Cleanup subscription on unmount
+        return () => unsubscribe();
     }, []);
 
-    // Wait for showOnboarding to be set true or false
-    useEffect(() => {
-        if (showOnboarding !== null) {
-            console.log('Context : showOnboarding ->', showOnboarding)
-            setIsAppLoading(false);
-        }
-    }, [showOnboarding]);
-
-    const logout = async () => {
-        setUser(null);
-        setIsLoggedIn(false);
-        await AsyncStorage.removeItem('user');
-        console.log('User logged out');
-    }
-
-    //value : true or false
-    const updateShowOnboarding = (value) => {
-        console.log('Context : updateShowOnboarding ->', value)
+    const updateShowOnboarding = async (value) => {
         setShowOnboarding(value);
+        await AsyncStorage.setItem('showOnboarding', JSON.stringify(value));
     }
 
-    // value : true or false
-    const updateIsLoggedIn = (value) => {
+    const updateIsLoggedIn = async (value) => {
         setIsLoggedIn(value);
-        if (!value) {
-            logout();
-        }
+        await AsyncStorage.setItem('isLoggedIn', JSON.stringify(value));
     }
 
-    // user: {
-    //     id: string,
-    //     email: string,
-    //     username: string,
-    // }
     const updateUser = async (user) => {
         setUser(user);
         await AsyncStorage.setItem('user', JSON.stringify(user));
@@ -79,7 +50,7 @@ export const AppStateProvider = ({ children }) => {
             {children}
         </AppStateContext.Provider>
     );
-}
+};
 
 export const useAppState = () => {
     const appState = useContext(AppStateContext);
