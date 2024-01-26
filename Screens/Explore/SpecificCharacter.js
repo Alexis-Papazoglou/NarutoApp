@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
         right: 0,
         alignItems: 'center',
         justifyContent: 'center',
-        marginTop: 22,
+        marginTop: 40,
         backgroundColor: 'black',
     },
     activityIndicatorContainer: {

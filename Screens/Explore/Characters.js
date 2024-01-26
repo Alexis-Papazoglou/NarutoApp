@@ -72,6 +72,7 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
         paddingHorizontal: 10,
         justifyContent: 'center',
+        marginTop: 10,
     },
     input: {
         height: 40,

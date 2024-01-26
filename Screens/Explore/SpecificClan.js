@@ -61,7 +61,7 @@ export default function SpecificClan({ route, navigation, width, height }) {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 20,
+    marginTop: 30,
     flex: 1,
     backgroundColor: 'black', 
     padding: 10,

@@ -12,8 +12,11 @@ import { useAppState } from './ContextProviders/AppStateProvider';
 import { useState } from 'react';
 import { getFirestore, doc, onSnapshot } from "firebase/firestore";
 import { Image } from 'react-native';
+import { Dimensions } from 'react-native';
 
 const Tab = createBottomTabNavigator();
+const screenHeight = Dimensions.get('window').height;
+
 
 export default function BottomTabNavigator() {
     const [profilePictureUrl, setProfilePictureUrl] = useState(null);
@@ -142,7 +145,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 0,
         width: '100%',
-        height: 55,  // Adjust this value to control the height of the tabBar
+        height: screenHeight > 800 ? 85 : 55,  // Adjust this value to control the height of the tabBar
         backgroundColor: '#151515',
         borderTopColor: 'orange',
         borderTopWidth: 0.3,

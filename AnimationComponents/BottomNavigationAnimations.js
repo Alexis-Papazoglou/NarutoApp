@@ -1,6 +1,9 @@
 import { StyleSheet, View, Animated, TouchableWithoutFeedback } from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
 import * as Haptics from 'expo-haptics';
+import { Dimensions } from 'react-native';
+
+const screenHeight = Dimensions.get('window').height;
 
 export default function BottomNavigationAnimations() {
     const gifs = [
@@ -98,7 +101,7 @@ export default function BottomNavigationAnimations() {
 const styles = StyleSheet.create({
     container: {
         position: 'absolute',
-        bottom: 0,
+        bottom: screenHeight > 800 ? 20 : 0,
         alignSelf: 'center',
         justifyContent: 'center',
         alignItems: 'center',
@@ -125,8 +128,8 @@ const styles = StyleSheet.create({
         borderBottomRightRadius: 50,
     },
     gifStyle: {
-        width: 90,
-        height: 90,
+        width: 82,
+        height: 82,
         borderRadius: 50,
     }
 });

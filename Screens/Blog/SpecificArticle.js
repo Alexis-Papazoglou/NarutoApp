@@ -100,7 +100,7 @@ export default function SpecificArticle({ route }) {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 25,
+    marginTop: 40,
     flex: 1,
     backgroundColor: 'black',
   },
